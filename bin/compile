@@ -1,23 +1,86 @@
-#!/bin/sh
+#!/bin/bash
 
-indent() {
-  sed -u 's/^/       /'
-}
+declare -A PACKAGES
+PACKAGES["x264"]="git://git.videolan.org/x264.git"
+PACKAGES["yasm"]="http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz"
+PACKAGES["webm"]="http://webm.googlecode.com/files/libvpx-v1.3.0.zip"
 
-echo "-----> Install ffmpeg"
+FFMPEG_URL="https://github.com/FFmpeg/FFmpeg.git"
 BUILD_DIR=$1
 VENDOR_DIR="vendor"
-DOWNLOAD_URL="http://flect.github.io/heroku-binaries/libs/ffmpeg.tar.gz"
 
-echo "DOWNLOAD_URL = " $DOWNLOAD_URL | indent
+indent() {
+    sed -u 's/^/       /'
+}
 
+# Convenience method
+installLibs() {
+    for FFMPEG_LIB_URL in "${!PACKAGES[@]}"
+    do
+	#extension=$(echo "libvpx-v1.1.0.tar.bz2" | awk -F . '{print $NF}')
+	if [ ${extension} == "git" ]
+	then
+	    git clone FFMPEG_LIB_URL
+	elif [ ${extension} == "tar" ]
+	then
+	    curl -L  --silent $FFMPEG_LIB_URL | tar xvzf 
+	fi
+
+	./configure
+	make && make install
+    done
+}
+
+echo "-----> Install ffmpeg and needed libs"
+# Go into vendor dir
 cd $BUILD_DIR
 mkdir -p $VENDOR_DIR
 cd $VENDOR_DIR
-curl -L --silent $DOWNLOAD_URL | tar xz
 
-echo "exporting PATH and LIBRARY_PATH" | indent
-PROFILE_PATH="$BUILD_DIR/.profile.d/ffmpeg.sh"
-mkdir -p $(dirname $PROFILE_PATH)
-echo 'export PATH="$PATH:vendor/ffmpeg/bin"' >> $PROFILE_PATH
-echo 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:vendor/ffmpeg/lib"' >> $PROFILE_PATH
+# Get yasm
+curl -L --silent http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz
+tar xvzf yasm-1.2.0.tar.gz
+cd yasm-1.2.0
+./configure
+make && make install
+cd ..
+
+# Get x264
+git clone git://git.videolan.org/x264.git
+cd x264
+./configure --enable-shared
+make && make install
+cd ..
+
+# Get webm
+curl -L --silent http://webm.googlecode.com/files/libvpx-v1.1.0.tar.bz2
+tar xvjf libvpx-v1.1.0.tar.bz2
+cd libvpx-v1.1.0
+./configure 
+make
+make install
+cd ..
+
+# NOW get ffmpeg
+echo "Cloning ffmpeg from FFMPEG_URL = " $FFMPEG_URL | indent
+git clone $FFMPEG_URL
+
+echo "Installing ffmpeg..." | indent
+cd FFmpeg
+./configure --enable-gpl --enable-version3 --enable-nonfree --enable-postproc \
+--enable-libfaac --enable-libmp3lame --enable-libopencore-amrnb \
+--enable-libopencore-amrwb --enable-libtheora --enable-libvorbis \
+--enable-libvpx --enable-libx264 --enable-libxvid 
+make
+make install
+
+# RM downloaded archives for needed libraries
+rm *.tar.gz
+rm *.tar.bz2
+
+# Get back to this
+#echo "exporting PATH and LIBRARY_PATH" | indent
+#PROFILE_PATH="$BUILD_DIR/.profile.d/ffmpeg.sh"
+#mkdir -p $(dirname $PROFILE_PATH)
+#echo 'export PATH="$PATH:vendor/ffmpeg/bin"' >> $PROFILE_PATH
+#echo 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:vendor/ffmpeg/lib"' >> $PROFILE_PATH
