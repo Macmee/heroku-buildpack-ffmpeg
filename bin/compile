@@ -12,8 +12,10 @@ PROFILE_PATH="$BUILD_DIR/.profile.d/ffmpeg.sh"
 VENDOR_DIR="vendor"
 FFMPEG_BUILD_DIR="ffmpeg_build"
 FFMPEG_SRC_DIR="ffmpeg_src"
+FFMPEG_BIN_DIR="ffmpeg_bin"
 BUILD_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_BUILD_DIR"
 SOURCE_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_SRC_DIR"
+BIN_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_SRC_DIR"
 
 indent() {
     sed -u 's/^/       /'
@@ -55,9 +57,9 @@ echo "-----> Fetching yasm..." | indent
 curl -L -s http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz > yasm-1.2.0.tar.gz
 tar xvzf yasm-1.2.0.tar.gz > /dev/null
 cd yasm-1.2.0
-./configure -q --prefix="$BUILD_PATH" --bindir="$BUILD_PATH/bin" > /dev/null
+./configure -q --prefix="$BUILD_PATH" --bindir="$BIN_PATH" > /dev/null
 make && make install > /dev/null
-echo 'export PATH="$PATH:$BUILD_PATH/bin"' >> $PROFILE_PATH
+echo 'export PATH="$PATH:$BIN_PATH"' >> $PROFILE_PATH
 echo '-----> Profile path is now '$PATH | indent
 cd ..
 
@@ -66,7 +68,7 @@ echo "-----> Fetching x264 lib..." | indent
 curl -L -s http://download.videolan.org/pub/x264/snapshots/last_x264.tar.bz2
 tar xjvf last_x264.tar.bz2 > /dev/null
 cd x264-snapshot*
-./configure --prefix="$BUILD_PATH" --bindir="$BUILD_PATH/bin" --enable-static
+./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static
 make && make install > /dev/null
 cd ..
 
@@ -105,7 +107,7 @@ tar xjvf ffmpeg-snapshot.tar.bz2 > /dev/null
 
 echo "-----> Installing ffmpeg..." | indent
 cd ffmpeg
-./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BUILD_PATH/bin" \
+./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BIN_PATH" \
 --extra-libs=-ldl --enable-gpl --enable-version3 --enable-nonfree --enable-postproc \
 --enable-libmp3lame --enable-libopencore-amrnb --enable-libvorbis --enable-libvpx \ 
 --enable-libx264 --enable-libxvid > /dev/null
