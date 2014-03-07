@@ -61,6 +61,8 @@ tar xvzf yasm-1.2.0.tar.gz > /dev/null
 cd yasm-1.2.0
 ./configure -q --prefix="$BUILD_PATH" --bindir="$BIN_PATH" > /dev/null
 make && make install > /dev/null
+
+export PATH="$PATH:$BIN_PATH"
 echo 'export PATH="$PATH:$BIN_PATH"' >> $PROFILE_PATH
 echo '-----> Profile path is now '$PATH | indent
 cd ..
@@ -109,6 +111,9 @@ tar xjvf ffmpeg-snapshot.tar.bz2 > /dev/null
 
 echo "-----> Installing ffmpeg..." | indent
 cd ffmpeg
+PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig"
+export PKG_CONFIG_PATH
+echo 'export PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig"' >> $PROFILE_PATH
 ./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BIN_PATH" --extra-libs=-ldl --enable-gpl --enable-version3 --enable-nonfree --enable-postproc --enable-libmp3lame --enable-libopencore-amrnb --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libxvid > /dev/null
 make && make install
 cd ..
@@ -117,4 +122,4 @@ cd ..
 rm *.tar.gz
 rm *.tar.bz2
 
-echo "Finished building ffmpeg and libraries." | indent
+echo "-----> Finished building ffmpeg and libraries." | indent
