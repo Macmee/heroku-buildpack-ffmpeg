@@ -15,7 +15,7 @@ FFMPEG_SRC_DIR="ffmpeg_src"
 FFMPEG_BIN_DIR="ffmpeg_bin"
 BUILD_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_BUILD_DIR"
 SOURCE_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_SRC_DIR"
-BIN_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_SRC_DIR"
+BIN_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_BIN_DIR"
 
 indent() {
     sed -u 's/^/       /'
@@ -48,12 +48,11 @@ mkdir -p $(dirname $PROFILE_PATH)
 cd $BUILD_DIR
 mkdir -p $VENDOR_DIR
 cd $VENDOR_DIR
-mkdir -p "$FFMPEG_BIN_DIR/bin"
 mkdir -p $FFMPEG_BIN_DIR
 mkdir -p $FFMPEG_BUILD_DIR
 mkdir -p $FFMPEG_SRC_DIR
-cd $FFMPEG_SRC_DIR
 
+cd $FFMPEG_SRC_DIR
 # Get yasm
 echo "-----> Fetching yasm..." | indent
 curl -L -s http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz > yasm-1.2.0.tar.gz
@@ -61,7 +60,7 @@ tar xvzf yasm-1.2.0.tar.gz > /dev/null
 cd yasm-1.2.0
 ./configure -q --prefix="$BUILD_PATH" --bindir="$BIN_PATH" > /dev/null
 make && make install > /dev/null
-echo 'export PATH="$PATH:$BIN_PATH/bin"' >> $PROFILE_PATH
+echo 'export PATH="$PATH:$BIN_PATH"' >> $PROFILE_PATH
 echo '-----> Profile path is now '$PATH | indent
 cd ..
 
