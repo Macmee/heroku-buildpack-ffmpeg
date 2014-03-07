@@ -48,6 +48,8 @@ mkdir -p $(dirname $PROFILE_PATH)
 cd $BUILD_DIR
 mkdir -p $VENDOR_DIR
 cd $VENDOR_DIR
+mkdir -p "$FFMPEG_BIN_DIR/bin"
+mkdir -p $FFMPEG_BIN_DIR
 mkdir -p $FFMPEG_BUILD_DIR
 mkdir -p $FFMPEG_SRC_DIR
 cd $FFMPEG_SRC_DIR
@@ -59,7 +61,7 @@ tar xvzf yasm-1.2.0.tar.gz > /dev/null
 cd yasm-1.2.0
 ./configure -q --prefix="$BUILD_PATH" --bindir="$BIN_PATH" > /dev/null
 make && make install > /dev/null
-echo 'export PATH="$PATH:$BIN_PATH"' >> $PROFILE_PATH
+echo 'export PATH="$PATH:$BIN_PATH/bin"' >> $PROFILE_PATH
 echo '-----> Profile path is now '$PATH | indent
 cd ..
 
@@ -107,10 +109,7 @@ tar xjvf ffmpeg-snapshot.tar.bz2 > /dev/null
 
 echo "-----> Installing ffmpeg..." | indent
 cd ffmpeg
-./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BIN_PATH" \
---extra-libs=-ldl --enable-gpl --enable-version3 --enable-nonfree --enable-postproc \
---enable-libmp3lame --enable-libopencore-amrnb --enable-libvorbis --enable-libvpx \ 
---enable-libx264 --enable-libxvid > /dev/null
+./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BIN_PATH" --extra-libs=-ldl --enable-gpl --enable-version3 --enable-nonfree --enable-postproc --enable-libmp3lame --enable-libopencore-amrnb --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libxvid > /dev/null
 make && make install
 cd ..
 
