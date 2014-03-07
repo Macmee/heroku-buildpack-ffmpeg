@@ -11,7 +11,9 @@ BUILD_DIR=$1
 PROFILE_PATH="$BUILD_DIR/.profile.d/ffmpeg.sh"
 VENDOR_DIR="vendor"
 FFMPEG_BUILD_DIR="ffmpeg_build"
+FFMPEG_BUILD_DIR="ffmpeg_src"
 BUILD_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_BUILD_DIR"
+SOURCE_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_SRC_DIR"
 
 indent() {
     sed -u 's/^/       /'
@@ -45,6 +47,8 @@ cd $BUILD_DIR
 mkdir -p $VENDOR_DIR
 cd $VENDOR_DIR
 mkdir -p $FFMPEG_BUILD_DIR
+mkdir -p $FFMPEG_SRC_DIR
+cd $FFMPEG_SRC_DIR
 
 # Get yasm
 echo "-----> Fetching yasm..." | indent
