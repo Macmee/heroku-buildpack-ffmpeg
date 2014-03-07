@@ -63,8 +63,9 @@ cd ..
 
 # Get x264
 echo "-----> Fetching x264 lib..." | indent
-git clone git://git.videolan.org/x264.git
-cd x264
+curl -L -s http://download.videolan.org/pub/x264/snapshots/last_x264.tar.bz2
+tar xjvf last_x264.tar.bz2 > /dev/null
+cd x264-snapshot*
 ./configure --prefix="$BUILD_PATH" --bindir="$BUILD_PATH/bin" --enable-static
 make && make install > /dev/null
 cd ..
@@ -104,8 +105,8 @@ tar xjvf ffmpeg-snapshot.tar.bz2 > /dev/null
 
 echo "-----> Installing ffmpeg..." | indent
 cd ffmpeg
-./configure --prefix="$BUILD_PATH/bin" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BUILD_PATH/bin" \
---enable-gpl --enable-version3 --enable-nonfree --enable-postproc \
+./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BUILD_PATH/bin" \
+--extra-libs=-ldl --enable-gpl --enable-version3 --enable-nonfree --enable-postproc \
 --enable-libmp3lame --enable-libopencore-amrnb --enable-libvorbis --enable-libvpx \ 
 --enable-libx264 --enable-libxvid > /dev/null
 make && make install
