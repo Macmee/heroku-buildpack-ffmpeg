@@ -6,7 +6,7 @@ PACKAGES["x264"]="git://git.videolan.org/x264.git"
 PACKAGES["yasm"]="http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz"
 PACKAGES["webm"]="http://webm.googlecode.com/files/libvpx-v1.3.0.zip"
 
-FFMPEG_URL="https://github.com/FFmpeg/FFmpeg.git"
+FFMPEG_URL="git://git.videolan.org/ffmpeg.git"
 BUILD_DIR=$1
 PROFILE_PATH="$BUILD_DIR/.profile.d/ffmpeg.sh"
 VENDOR_DIR="vendor"
@@ -111,14 +111,14 @@ cd ..
 
 # NOW get ffmpeg
 echo "-----> Fetching ffmpeg..." | indent
-git clone $FFMPEG_URL > /dev/null
+git clone $FFMPEG_URL FFmpeg > /dev/null
 
 echo "-----> Installing ffmpeg..." | indent
 cd FFmpeg
 PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig"
 export PKG_CONFIG_PATH
 echo 'export PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig"' >> $PROFILE_PATH
-./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BIN_PATH" --extra-libs=-ldl --enable-gpl --enable-version3 --enable-nonfree --enable-postproc --enable-libmp3lame --enable-libopencore-amrnb --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libxvid > /dev/null
+./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BIN_PATH" --extra-libs=-ldl --enable-version3 --enable-nonfree --enable-postproc --enable-libmp3lame --enable-libopencore-amrnb --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libxvid > /dev/null
 make > /dev/null 
 make install > /dev/null
 cd ..
