@@ -118,7 +118,7 @@ cd FFmpeg
 PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig"
 export PKG_CONFIG_PATH
 echo 'export PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig"' >> $PROFILE_PATH
-./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BIN_PATH" --enable-gpl --enable-libfaac --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libvpx --enable-libx264 --enable-nonfree --enable-version3
+./configure --prefix="$BUILD_PATH" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BIN_PATH" --enable-gpl --enable-libfdk_aac --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libvpx --enable-libx264 --enable-nonfree --enable-version3 
 make -j4 > /dev/null 
 make install > /dev/null
 cd ..
