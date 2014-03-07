@@ -103,7 +103,7 @@ curl -L -s http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 > ffmpeg-snapshot.
 tar xjvf ffmpeg-snapshot.tar.bz2 > /dev/null
 
 echo "-----> Installing ffmpeg..." | indent
-cd FFmpeg
+cd ffmpeg
 ./configure --prefix="$BUILD_PATH/bin" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BUILD_PATH/bin" \
 --enable-gpl --enable-version3 --enable-nonfree --enable-postproc \
 --enable-libmp3lame --enable-libopencore-amrnb --enable-libvorbis --enable-libvpx \ 
