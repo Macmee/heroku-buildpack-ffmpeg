@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Add library package URLs to the top here
 declare -A PACKAGES
 PACKAGES["x264"]="git://git.videolan.org/x264.git"
 PACKAGES["yasm"]="http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz"
@@ -7,7 +8,10 @@ PACKAGES["webm"]="http://webm.googlecode.com/files/libvpx-v1.3.0.zip"
 
 FFMPEG_URL="https://github.com/FFmpeg/FFmpeg.git"
 BUILD_DIR=$1
+PROFILE_PATH="$BUILD_DIR/.profile.d/ffmpeg.sh"
 VENDOR_DIR="vendor"
+FFMPEG_BUILD_DIR="ffmpeg_build"
+BUILD_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_BUILD_DIR"
 
 indent() {
     sed -u 's/^/       /'
@@ -17,51 +21,56 @@ indent() {
 installLibs() {
     for FFMPEG_LIB_URL in "${!PACKAGES[@]}"
     do
-	extension=$(echo "libvpx-v1.1.0.tar.bz2" | awk -F . '{print $NF}')
+	extension=$(echo FFMPEG_LIB_URL | awk -F . '{print $NF}')
 	if [ ${extension} == "git" ]
 	then
 	    git clone FFMPEG_LIB_URL
 	elif [ ${extension} == "tar" ]
 	then
+		#extension=$(echo FFMPEG_LIB_URL | awk -F . '{print $(NF - 1)}')
 	    curl -L  -s $FFMPEG_LIB_URL | tar xvzf 
 	fi
 
-	./configure --prefix=$(pwd)'/bin'
-	make && make install
+	./configure --prefix=$(pwd)'/bin' > /dev/null
+	make && make install > /dev/null
 	echo 'export PATH="$PATH:$(pwd)"' >> $PROFILE_PATH
     done
 }
 
 echo "-----> Install ffmpeg and needed libs"
+# Create place for profile path
+mkdir -p $(dirname $PROFILE_PATH)
+
 # Go into vendor dir
 cd $BUILD_DIR
 mkdir -p $VENDOR_DIR
 cd $VENDOR_DIR
+mkdir -p $FFMPEG_BUILD_DIR
 
 # Get yasm
+echo "Fetching yasm..." | indent
 curl -L -s http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz > yasm-1.2.0.tar.gz
-tar xvzf yasm-1.2.0.tar.gz
+tar xvzf yasm-1.2.0.tar.gz > /dev/null
 cd yasm-1.2.0
-./configure --prefix=$(pwd)'/bin'
-make && make install
-echo 'export PATH="$PATH:$(pwd)"' >> $PROFILE_PATH
+./configure --prefix="$BUILD_PATH" --bindir="$BUILD_PATH/bin" > /dev/null
+make && make install > /dev/null
 cd ..
 
 # Get x264
+echo "Fetching x264 lib..." | indent
 git clone git://git.videolan.org/x264.git
 cd x264
-./configure --prefix=$(pwd)'/bin' --enable-shared
-make && make install
-echo 'export PATH="$PATH:$(pwd)"' >> $PROFILE_PATH
+./configure --prefix="$BUILD_PATH" --bindir="$BUILD_PATH/bin" --enable-static
+make && make install > /dev/null
 cd ..
 
 # Get webm
+echo "Fetching webm lib..." | indent
 curl -L -s http://webm.googlecode.com/files/libvpx-v1.1.0.tar.bz2 > libvpx-v1.1.0.tar.bz2
-tar xvjf libvpx-v1.1.0.tar.bz2
+tar xvjf libvpx-v1.1.0.tar.bz2 > /dev/null
 cd libvpx-v1.1.0
-./configure --prefix=$(pwd)'/bin'
-make && make install
-echo 'export PATH="$PATH:$(pwd)"' >> $PROFILE_PATH
+./configure --prefix="$BUILD_PATH" --disable-examples > /dev/null
+make && make install > /dev/null
 cd ..
 
 # NOW get ffmpeg
@@ -70,10 +79,11 @@ git clone $FFMPEG_URL
 
 echo "Installing ffmpeg..." | indent
 cd FFmpeg
-./configure --prefix=$(pwd)'/bin' --enable-gpl --enable-version3 --enable-nonfree --enable-postproc \
+./configure --prefix=="$BUILD_PATH/bin" --extra-cflags="-I$BUILD_PATH/include" --extra-ldflags="-L$BUILD_PATH/lib" --bindir="$BUILD_PATH/bin" \
+--enable-gpl --enable-version3 --enable-nonfree --enable-postproc \
 --enable-libfaac --enable-libmp3lame --enable-libopencore-amrnb \
 --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis \
---enable-libvpx --enable-libx264 --enable-libxvid 
+--enable-libvpx --enable-libx264 --enable-libxvid > /dev/null
 make && make install
 
 # RM downloaded archives for needed libraries
