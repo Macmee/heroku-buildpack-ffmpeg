@@ -15,7 +15,7 @@ FFMPEG_SRC_DIR="ffmpeg_src"
 FFMPEG_BIN_DIR="ffmpeg_bin"
 BUILD_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_BUILD_DIR"
 SOURCE_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_SRC_DIR"
-BIN_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_BIN_DIR"
+BIN_PATH="$BUILD_DIR/$VENDOR_DIR/$FFMPEG_BIN_DIR/bin"
 
 indent() {
     sed -u 's/^/       /'
@@ -49,6 +49,7 @@ cd $BUILD_DIR
 mkdir -p $VENDOR_DIR
 cd $VENDOR_DIR
 mkdir -p $FFMPEG_BIN_DIR
+mkdir -p "$FFMPEG_BIN_DIR/bin"
 mkdir -p $FFMPEG_BUILD_DIR
 mkdir -p $FFMPEG_SRC_DIR
 
@@ -66,7 +67,7 @@ cd ..
 
 # Get x264
 echo "-----> Fetching x264 lib..." | indent
-curl -L -s http://download.videolan.org/pub/x264/snapshots/last_x264.tar.bz2
+curl -L -s http://download.videolan.org/pub/x264/snapshots/last_x264.tar.bz2 > last_x264.tar.bz2
 tar xjvf last_x264.tar.bz2 > /dev/null
 cd x264-snapshot*
 ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static
